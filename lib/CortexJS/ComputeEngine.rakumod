@@ -10,8 +10,17 @@ multi method new(
     Str:D :$node = 'node',
     Real:D :$request-timeout = 10
 ) {
-    if $script.isa(Whatever) { $script = %?RESOURCES<js/ce-bridge.mjs>.IO.Str }
-
+    if $script.isa(Whatever) {
+        my $resource = %?RESOURCES<js/ce-bridge.mjs>;
+        if $resource.defined {
+            $script = $resource.slurp;
+        } else {
+            my $local = 'resources/js/ce-bridge.mjs'.IO.absolute;
+            die 'Unable to resolve default bridge script from resources or local resources/js/ce-bridge.mjs'
+                unless $local.IO.f;
+            $script = $local.slurp;
+        }
+    }
     my $backend = CortexJS::ComputeEngine::Backend::Node.new(
         :$script,
         :$node,
@@ -43,6 +52,26 @@ method simplify($expr) {
 
 method evaluate($expr) {
     $!backend.call('evaluate', :$expr);
+}
+
+method N($expr) {
+    $!backend.call('n', :$expr);
+}
+
+method expand($expr) {
+    $!backend.call('expand', :$expr);
+}
+
+method expandAll($expr) {
+    $!backend.call('expand_all', :$expr);
+}
+
+method factor($expr) {
+    $!backend.call('factor', :$expr);
+}
+
+method solve($expr) {
+    $!backend.call('solve', :$expr);
 }
 
 method to-latex($expr) {

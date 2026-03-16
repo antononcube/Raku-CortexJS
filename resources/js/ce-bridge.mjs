@@ -1,7 +1,7 @@
 import readline from 'node:readline';
 import { ComputeEngine } from '@cortex-js/compute-engine';
 
-const BRIDGE_VERSION = '0.1.0';
+const BRIDGE_VERSION = '0.0.1';
 const ce = new ComputeEngine();
 
 function ok(id, result) {
@@ -59,6 +59,31 @@ function handleRequest(req) {
     case 'evaluate': {
       const expr = ce.box(args.expr).evaluate();
       return ok(id, toMathJSON(expr));
+    }
+
+    case 'n': {
+      const expr = ce.box(args.expr).N();
+      return ok(id, toMathJSON(expr));
+    }
+
+    case 'expand': {
+      const expr = ce.box(args.expr).expand();
+      return ok(id, toMathJSON(expr));
+    }
+
+    case 'expand_all': {
+      const expr = ce.box(['ExpandAll', args.expr]).evaluate();
+      return ok(id, toMathJSON(expr));
+    }
+
+    case 'factor': {
+      const expr = ce.box(['Factor', args.expr]).evaluate();
+      return ok(id, toMathJSON(expr));
+    }
+
+    case 'solve': {
+      const solutions = ce.box(args.expr).solve();
+      return ok(id, solutions?.map(toMathJSON) ?? null);
     }
 
     case 'to_latex': {

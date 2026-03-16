@@ -18,12 +18,19 @@ method !chunk-text($chunk --> Str) {
     $chunk ~~ Blob ?? $chunk.decode('utf8') !! $chunk.Str;
 }
 
+method !build-proc() {
+    if $!script.IO.f {
+        return Proc::Async.new($!node, $!script, :w);
+    }
+
+    # Treat $.script as inline ESM source code.
+    return Proc::Async.new($!node, '--input-type=module', '--eval', $!script, :w);
+}
+
 method start() {
     return self if $!running;
 
-    die "Bridge script not found: {$!script}" unless $!script.IO.f;
-
-    $!proc = Proc::Async.new($!node, $!script, :w);
+    $!proc = self!build-proc;
     self!wire-streams;
 
     try { $!proc.start; }
