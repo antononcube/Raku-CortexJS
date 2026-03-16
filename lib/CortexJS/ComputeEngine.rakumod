@@ -15,7 +15,7 @@ multi method new(
     my $backend = CortexJS::ComputeEngine::Backend::Node.new(
         :$script,
         :$node,
-        request-timeout => $request-timeout,
+        :$request-timeout,
     ).start;
 
     self.bless(:$backend);
@@ -30,23 +30,23 @@ method version() {
 }
 
 method parse-latex(Str:D $latex) {
-    $!backend.call('parse_latex', latex => $latex);
+    $!backend.call('parse_latex', :$latex);
 }
 
 method box($expr) {
-    $!backend.call('box', expr => $expr);
+    $!backend.call('box', :$expr);
 }
 
 method simplify($expr) {
-    $!backend.call('simplify', expr => $expr);
+    $!backend.call('simplify', :$expr);
 }
 
 method evaluate($expr) {
-    $!backend.call('evaluate', expr => $expr);
+    $!backend.call('evaluate', :$expr);
 }
 
 method to-latex($expr) {
-    $!backend.call('to_latex', expr => $expr);
+    $!backend.call('to_latex', :$expr);
 }
 
 method close() {
