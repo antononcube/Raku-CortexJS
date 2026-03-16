@@ -1,0 +1,44 @@
+use v6.d;
+use Test;
+use CortexJS::ComputeEngine;
+
+sub can-run-node() {
+    my $proc = try run 'node', '--version', :out, :err;
+    return False unless $proc.defined;
+    $proc.exitcode == 0;
+}
+
+unless can-run-node() {
+    plan 1;
+    skip 'node is not installed in this environment', 1;
+    exit 0;
+}
+
+my $script = 'resources/js/ce-bridge.mjs'.IO.absolute.Str;
+my $ce;
+my $startup-error = '';
+try {
+    $ce = CortexJS::ComputeEngine.new(:$script);
+    CATCH {
+        default {
+            $startup-error = .Str;
+        }
+    }
+}
+
+unless $ce.defined {
+    plan 1;
+    skip "backend did not start (is @cortex-js/compute-engine installed?): {$startup-error}", 1;
+    exit 0;
+}
+
+LEAVE { try $ce.close if $ce.defined; }
+
+my %ping = $ce.ping.Hash;
+is %ping<pong>, True, 'ping returns pong';
+
+my %version = $ce.version.Hash;
+is %version<backend>, '@cortex-js/compute-engine', 'version returns backend name';
+ok %version<node>.so, 'version returns node runtime';
+
+done-testing;

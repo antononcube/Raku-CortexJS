@@ -1,0 +1,20 @@
+{
+    "name": "CortexJS",
+    "description": "Raku bridge for the CortexJS Compute Engine Node package.",
+    "version": "0.0.1",
+    "raku": "6.*",
+    "auth": "zef:antononcube",
+    "depends": [
+        "JSON::Fast"
+    ],
+    "provides": {
+        "CortexJS": "lib/CortexJS.rakumod",
+        "CortexJS::ComputeEngine": "lib/CortexJS/ComputeEngine.rakumod",
+        "CortexJS::ComputeEngine::Backend::Node": "lib/CortexJS/ComputeEngine/Backend/Node.rakumod"
+    },
+    "resources": [
+        "js/ce-bridge.mjs"
+    ],
+    "license": "Artistic-2.0LICENSE",
+    "source-url": "https://github.com/antononcube/Raku-CortexJS.git"
+}
