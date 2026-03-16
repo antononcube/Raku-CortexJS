@@ -34,10 +34,8 @@ zef install https://github.com/antononcube/Raku-CortexJS.git
 use CortexJS;
 my $ce = ComputeEngine.new;
 
+#$ce.expand($ce.parse-latex('(a + b)^2'))
 $ce.evaluate($ce.parse-latex('e^{i\\pi}'))
-```
-```
-# -1
 ```
 
 ```raku
@@ -45,9 +43,6 @@ LEAVE $ce.close;
 
 my $expr = $ce.parse-latex('3x^2 + 2x^2 + x + 5');
 say "{$ce.to-latex($expr)} = {$ce.to-latex($ce.simplify($expr))}";
-```
-```
-# 2x^2+3x^2+x+5 = 5x^2+x+5
 ```
 
 ----
