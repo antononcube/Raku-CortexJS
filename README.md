@@ -41,6 +41,13 @@ $ce.evaluate($ce.parse-latex('e^{i\\pi}'))
 ```
 
 ```raku
+$ce.to-latex($ce.expand($ce.parse-latex('(a + b)^2')));
+```
+```
+# a^2+b^2+2ab
+```
+
+```raku
 LEAVE $ce.close;
 
 my $expr = $ce.parse-latex('3x^2 + 2x^2 + x + 5');
@@ -53,3 +60,5 @@ say "{$ce.to-latex($expr)} = {$ce.to-latex($ce.simplify($expr))}";
 ----
 
 ## References
+
+[ML1] MathLive.io, [Compute Engine](https://mathlive.io/compute-engine/).

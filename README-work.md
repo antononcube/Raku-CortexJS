@@ -34,8 +34,11 @@ zef install https://github.com/antononcube/Raku-CortexJS.git
 use CortexJS;
 my $ce = ComputeEngine.new;
 
-#$ce.expand($ce.parse-latex('(a + b)^2'))
 $ce.evaluate($ce.parse-latex('e^{i\\pi}'))
+```
+
+```raku
+$ce.to-latex($ce.expand($ce.parse-latex('(a + b)^2')));
 ```
 
 ```raku
@@ -48,3 +51,5 @@ say "{$ce.to-latex($expr)} = {$ce.to-latex($ce.simplify($expr))}";
 ----
 
 ## References
+
+[ML1] MathLive.io, [Compute Engine](https://mathlive.io/compute-engine/).
