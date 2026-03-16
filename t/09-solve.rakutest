@@ -1,0 +1,46 @@
+use v6.d;
+use Test;
+use CortexJS::ComputeEngine;
+
+sub can-run-node() {
+    my $proc = try run 'node', '--version', :out, :err;
+    return False unless $proc.defined;
+    $proc.exitcode == 0;
+}
+
+unless can-run-node() {
+    plan 1;
+    skip 'node is not installed in this environment', 1;
+    exit 0;
+}
+
+my $script = 'resources/js/ce-bridge.mjs'.IO.absolute.Str;
+my $ce;
+my $startup-error = '';
+try {
+    $ce = CortexJS::ComputeEngine.new(:$script);
+    CATCH {
+        default {
+            $startup-error = .Str;
+        }
+    }
+}
+
+unless $ce.defined {
+    plan 1;
+    skip "backend did not start (is @cortex-js/compute-engine installed?): {$startup-error}", 1;
+    exit 0;
+}
+
+LEAVE { try $ce.close if $ce.defined; }
+
+my $eq = $ce.parse-latex('x^2-1=0');
+my $solutions = $ce.solve($eq);
+ok $solutions ~~ Positional, 'solve returns a positional result';
+ok $solutions.elems > 0, 'solve returns at least one solution';
+
+my $latex = $ce.to-latex($solutions[0]);
+ok $latex ~~ Str, 'solution can be converted to latex';
+ok $latex.chars > 0, 'solution latex is not empty';
+
+done-testing;
