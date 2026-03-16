@@ -6,10 +6,12 @@ use CortexJS::ComputeEngine::Backend::Node;
 has CortexJS::ComputeEngine::Backend::Node $.backend is required;
 
 multi method new(
-    Str:D :$script!,
+    :$script is copy = Whatever,
     Str:D :$node = 'node',
     Real:D :$request-timeout = 10
 ) {
+    if $script.isa(Whatever) { $script = %?RESOURCES<js/ce-bridge.mjs>.IO.Str }
+
     my $backend = CortexJS::ComputeEngine::Backend::Node.new(
         :$script,
         :$node,

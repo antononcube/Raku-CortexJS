@@ -1,28 +1,10 @@
 use v6.d;
 
-use lib <. lib>;
+# use lib <. lib>;
 use CortexJS;
 
-#my $root = $*PROGRAM.parent.parent.absolute;
-#my $script = $root.child('resources/js/ce-bridge.mjs').Str;
-#
-#my $ce = ComputeEngine.new(:$script);
-#LEAVE $ce.close;
-
-my $script = 'resources/js/ce-bridge.mjs'.IO.absolute.Str;
-my $ce;
-my $startup-error = '';
-try {
-    $ce = CortexJS::ComputeEngine.new(:$script);
-    CATCH {
-        default {
-            $startup-error = .Str;
-        }
-    }
-}
-
-
-LEAVE { try $ce.close if $ce.defined; }
+my $ce = ComputeEngine.new;
+LEAVE $ce.close;
 
 say "ping: " ~ $ce.ping.raku;
 say "version: " ~ $ce.version.raku;
