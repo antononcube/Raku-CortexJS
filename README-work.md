@@ -91,19 +91,31 @@ flowchart TD
     D --> E["Send ping"]
     E --> F{"Ping ok?"}
     F -- "No" --> G["Throw startup error"]
-    F -- "Yes" --> H["Session ready"]
+    F -- "Yes" --> H
 
-    H --> |Yes| I["Raku method call (parse/evaluate/simplify/...)"]
+    
+    H{"Computations<br>finished?"} --> |No| I["Raku method call (parse/evaluate/simplify/...)"]
     I --> J["Serialize request as JSON line"]
     J --> K["Write request to Node stdin"]
     K --> L["Bridge executes CE operation"]
     L --> M["Write JSON response to stdout"]
     M --> N["Raku decodes and matches response"]
     N --> O["Return result to caller"]
-    O --> I
+    O --> H
 
-    H --> |No|P["close() / DESTROY"]
+    H --> |Yes|P["close() / DESTROY"]
     P --> Q["Close stdin + kill backend process"]
+    
+    subgraph RS["Computation Session"]
+        H 
+        I
+        J
+        K
+        L
+        M
+        N
+        O
+    end
 ```
 
 -----
