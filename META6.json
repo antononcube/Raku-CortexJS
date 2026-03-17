@@ -5,7 +5,8 @@
     "raku": "6.*",
     "auth": "zef:antononcube",
     "depends": [
-        "JSON::Fast"
+        "JSON::Fast:ver<0.19+>",
+        "LaTeX::Grammar:ver<0.0.1>+"
     ],
     "provides": {
         "CortexJS": "lib/CortexJS.rakumod",
@@ -15,6 +16,6 @@
     "resources": [
         "js/ce-bridge.mjs"
     ],
-    "license": "Artistic-2.0LICENSE",
+    "license": "Artistic-2.0",
     "source-url": "https://github.com/antononcube/Raku-CortexJS.git"
 }
