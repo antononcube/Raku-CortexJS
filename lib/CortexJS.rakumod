@@ -66,7 +66,7 @@ sub factor($expr) is export {
 
 sub to-latex($expr) is export {
     start-ce() without $ce;
-    return $ce.factor($expr);
+    return $ce.to-latex($expr);
 }
 
 END {
