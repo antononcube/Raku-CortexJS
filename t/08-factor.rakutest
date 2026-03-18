@@ -18,7 +18,7 @@ my $script = 'resources/js/ce-bridge.mjs'.IO.absolute.Str;
 my $ce;
 my $startup-error = '';
 try {
-    $ce = CortexJS::ComputeEngine.new(:$script);
+    $ce = CortexJS::ComputeEngine.new();
     CATCH {
         default {
             $startup-error = .Str;
