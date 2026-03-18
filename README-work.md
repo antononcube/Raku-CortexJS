@@ -122,6 +122,8 @@ flowchart TD
 
 ## Basic usage
 
+Make a new computation engine object and evaluate a LaTeX expression:
+
 ```raku
 use CortexJS;
 my $ce = ComputeEngine.new;
@@ -129,15 +131,34 @@ my $ce = ComputeEngine.new;
 $ce.evaluate($ce.parse-latex('e^{i\\pi}'))
 ```
 
+Expand expression:
+
 ```raku
 $ce.to-latex($ce.expand($ce.parse-latex('(a + b)^2')));
 ```
 
-```raku
-LEAVE $ce.close;
+Simplify expression:
 
+```raku
 my $expr = $ce.parse-latex('3x^2 + 2x^2 + x + 5');
 say "{$ce.to-latex($expr)} = {$ce.to-latex($ce.simplify($expr))}";
+```
+
+Using assignment for repeated expression evaluation:
+
+```raku
+my $expr = $ce.parse-latex("3x^2+4x+2");
+
+for (0, 0.1 ... 1) -> $x {
+  $ce.assign('x', $x);
+  say "f($x) = {$ce.evaluate($expr)}";
+}
+```
+
+Can be put in the last code block:
+
+```raku
+LEAVE $ce.close;
 ```
 
 ----
