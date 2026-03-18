@@ -34,8 +34,9 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $expanded = $ce.expand(["Multiply", "x", ["Add", "x", 1]]);
-say (:$expanded);
 ok $expanded.defined, 'expand returns a value';
 
 my $latex = $ce.to-latex($expanded);

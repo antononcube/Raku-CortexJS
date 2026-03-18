@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my %ping = $ce.ping.Hash;
 is %ping<pong>, True, 'ping returns pong';
 

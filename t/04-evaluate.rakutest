@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $evaluated = $ce.evaluate(["Sin", ["Divide", "Pi", 2]]);
 ok $evaluated.defined, 'evaluate returns a value';
 

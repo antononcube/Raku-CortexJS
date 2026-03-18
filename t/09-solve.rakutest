@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $eq = $ce.parse-latex('x^2-1=0');
 my $solutions = $ce.solve($eq);
 ok $solutions ~~ Positional, 'solve returns a positional result';

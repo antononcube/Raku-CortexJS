@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $simplified = $ce.simplify(["Add", 1, 2]);
 ok $simplified.defined, 'simplify returns a value';
 

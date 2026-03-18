@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $expr = $ce.parse-latex('x^2+1');
 ok $expr.defined, 'parse-latex returns a value';
 

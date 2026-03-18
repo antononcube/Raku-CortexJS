@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $expanded = $ce.expandAll(["Power", ["Add", "x", 1], 2]);
 ok $expanded.defined, 'expandAll returns a value';
 

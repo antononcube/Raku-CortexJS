@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $factored = $ce.factor(["Add", ["Power", "x", 2], ["Multiply", 2, "x"], 1]);
 ok $factored.defined, 'factor returns a value';
 

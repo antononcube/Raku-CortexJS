@@ -34,6 +34,8 @@ unless $ce.defined {
 
 LEAVE { try $ce.close if $ce.defined; }
 
+plan *;
+
 my $numeric = $ce.N(["Divide", 1, 3]);
 ok $numeric.defined, 'N returns a value';
 

@@ -2,6 +2,8 @@ use v6.d;
 use CortexJS;
 use Test;
 
+plan *;
+
 ok CortexJS::ComputeEngine.^name eq 'CortexJS::ComputeEngine', 'exports ComputeEngine alias';
 ok 'resources/js/ce-bridge.mjs'.IO.f, 'bridge script exists';
 
