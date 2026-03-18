@@ -56,6 +56,11 @@ function handleRequest(req) {
       return ok(id, toMathJSON(expr));
     }
 
+    case 'assign': {
+      const expr = ce.assign(args.id, args.expr);
+      return ok(id, toMathJSON(expr));
+    }
+
     case 'evaluate': {
       const expr = ce.box(args.expr).evaluate();
       return ok(id, toMathJSON(expr));

@@ -42,12 +42,20 @@ method parse-latex(Str:D $latex) {
     $!backend.call('parse_latex', :$latex);
 }
 
+method parse(Str:D $latex) {
+    self.parse-latex($latex);
+}
+
 method box($expr) {
     $!backend.call('box', :$expr);
 }
 
 method simplify($expr) {
     $!backend.call('simplify', :$expr);
+}
+
+method assign($id, $expr) {
+    $!backend.call('assign', :$id, :$expr);
 }
 
 method evaluate($expr) {
@@ -64,6 +72,10 @@ method expand($expr) {
 
 method expandAll($expr) {
     $!backend.call('expand_all', :$expr);
+}
+
+method expand-all($expr) {
+    self.expandAll($expr);
 }
 
 method factor($expr) {
