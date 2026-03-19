@@ -6,7 +6,7 @@
     "auth": "zef:antononcube",
     "depends": [
         "JSON::Fast:ver<0.19+>",
-        "LaTeX::Grammar:ver<0.0.1>+"
+        "LaTeX::Grammar:ver<0.0.1+>"
     ],
     "provides": {
         "CortexJS": "lib/CortexJS.rakumod",
