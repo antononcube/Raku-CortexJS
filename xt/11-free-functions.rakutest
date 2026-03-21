@@ -35,4 +35,18 @@ subtest {
     is evaluate(parse-latex('f(3)')), 6;
 }, 'assignment';
 
+subtest {
+    ok solve(parse-latex('x^2 - 5 x + 6 = 0'), 'x');
+    is-deeply solve(parse-latex('x^2 - 5 x + 6 = 0'), 'x'), [3, 2];
+
+    ok solve(parse-latex('x^2 - 5 x + 6 = 0'));
+    is-deeply solve(parse-latex('x^2 - 5 x + 6 = 0')), [3, 2];
+
+}, 'free function symbolic solution for x';
+
+subtest {
+    ok solve(parse-latex('x^2 - a x + 1 = 0'), 'a');
+    is-deeply solve(parse-latex('x^2 - a x + 1 = 0'), 'a'), [["Add", "x", ["Divide", 1, "x"]],];
+}, 'free function symbolic solution for a';
+
 done-testing;
