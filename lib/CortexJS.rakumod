@@ -57,7 +57,7 @@ sub expandAll($expr) is export {
     return $ce.expandAll($expr);
 }
 
-our $expand-all is export = &expandAll;
+our &expand-all is export = &expandAll;
 
 sub factor($expr) is export {
     start-ce() without $ce;
