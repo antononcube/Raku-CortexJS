@@ -82,8 +82,12 @@ method factor($expr) {
     $!backend.call('factor', :$expr);
 }
 
-method solve($expr) {
+multi method solve($expr) {
     $!backend.call('solve', :$expr);
+}
+
+multi method solve($expr, $vars) {
+    $!backend.call('solve', :$expr, :$vars);
 }
 
 method to-latex($expr) {

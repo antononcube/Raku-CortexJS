@@ -64,6 +64,22 @@ sub factor($expr) is export {
     return $ce.factor($expr);
 }
 
+proto sub solve($expr, |) is export {*}
+
+multi sub solve($expr, Str:D $var) {
+    return solve($expr, [$var,]);
+}
+
+multi sub solve($expr, @vars) {
+    start-ce() without $ce;
+    return $ce.solve($expr, @vars.join(', '));
+}
+
+multi sub solve($expr) {
+    start-ce() without $ce;
+    return $ce.solve($expr);
+}
+
 sub to-latex($expr) is export {
     start-ce() without $ce;
     return $ce.to-latex($expr);
