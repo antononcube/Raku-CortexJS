@@ -66,18 +66,19 @@ sub factor($expr) is export {
 
 proto sub solve($expr, |) is export {*}
 
-multi sub solve($expr, Str:D $var) {
-    return solve($expr, [$var,]);
-}
-
-multi sub solve($expr, @vars) {
+multi sub solve($expr, $vars) {
     start-ce() without $ce;
-    return $ce.solve($expr, @vars.join(', '));
+    return $ce.solve($expr, $vars);
 }
 
 multi sub solve($expr) {
     start-ce() without $ce;
     return $ce.solve($expr);
+}
+
+sub cortex-js-call($func, $expr) is export {
+    start-ce() without $ce;
+    return $ce.call($func, $expr);
 }
 
 sub to-latex($expr) is export {

@@ -90,6 +90,10 @@ multi method solve($expr, $vars) {
     $!backend.call('solve', :$expr, :$vars);
 }
 
+method call($func, $expr) {
+    $!backend.call('call', :$func, :$expr);
+}
+
 method to-latex($expr) {
     $!backend.call('to_latex', :$expr);
 }

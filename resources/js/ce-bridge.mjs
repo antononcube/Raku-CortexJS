@@ -72,7 +72,9 @@ function handleRequest(req) {
     }
 
     case 'expand': {
-      const expr = ce.box(args.expr).expand();
+      // Does not work anymore:
+      // const expr = ce.box(args.expr).expand();
+      const expr = ce.box(['Expand', args.expr]).evaluate();
       return ok(id, toMathJSON(expr));
     }
 
@@ -87,8 +89,13 @@ function handleRequest(req) {
     }
 
     case 'solve': {
-      const solutions = ce.box(args.expr).solve();
+      const solutions = ce.box(args.expr).solve(args.vars);
       return ok(id, solutions?.map(toMathJSON) ?? null);
+    }
+
+    case 'call': {
+      const expr = ce.box([args.func, args.expr]).evaluate();
+      return ok(id, toMathJSON(expr));
     }
 
     case 'to_latex': {
