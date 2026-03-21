@@ -1,5 +1,6 @@
 use v6.d;
 use Test;
+use CortexJS;
 use CortexJS::ComputeEngine;
 
 sub can-run-node() {
@@ -36,13 +37,29 @@ LEAVE { try $ce.close if $ce.defined; }
 
 plan *;
 
-my $eq = $ce.parse-latex('x^2-1=0');
-my $solutions = $ce.solve($eq);
-ok $solutions ~~ Positional, 'solve returns a positional result';
-ok $solutions.elems > 0, 'solve returns at least one solution';
+subtest {
+    my $eq = $ce.parse-latex('x^2-1=0');
+    my $solutions = $ce.solve($eq);
+    ok $solutions ~~ Positional, 'solve returns a positional result';
+    ok $solutions.elems > 0, 'solve returns at least one solution';
 
-my $latex = $ce.to-latex($solutions[0]);
-ok $latex ~~ Str, 'solution can be converted to latex';
-ok $latex.chars > 0, 'solution latex is not empty';
+    my $latex = $ce.to-latex($solutions[0]);
+    ok $latex ~~ Str, 'solution can be converted to latex';
+    ok $latex.chars > 0, 'solution latex is not empty';
+}, 'via computation engine object';
+
+subtest {
+    ok solve(parse-latex('x^2 - 5 x + 6 = 0'), 'x');
+    is-deeply solve(parse-latex('x^2 - 5 x + 6 = 0'), 'x'), [3, 2];
+
+    ok solve(parse-latex('x^2 - 5 x + 6 = 0'));
+    is-deeply solve(parse-latex('x^2 - 5 x + 6 = 0')), [3, 2];
+
+}, 'free function symbolic solution for x';
+
+subtest {
+    ok solve(parse-latex('x^2 - a x + 1 = 0'), 'a');
+    is-deeply solve(parse-latex('x^2 - a x + 1 = 0'), 'a'), [["Add", "x", ["Divide", 1, "x"]],];
+}, 'free function symbolic solution for a';
 
 done-testing;
