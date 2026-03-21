@@ -1,7 +1,7 @@
 {
     "name": "CortexJS",
     "description": "Raku bridge for the CortexJS Compute Engine Node package.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "raku": "6.*",
     "auth": "zef:antononcube",
     "depends": [
