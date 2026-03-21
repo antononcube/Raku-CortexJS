@@ -67,6 +67,10 @@ sub factor($expr) is export {
 proto sub solve($expr, |) is export {*}
 
 multi sub solve($expr, $vars) {
+    return solve($expr, :$vars);
+}
+
+multi sub solve($expr, :$vars) {
     start-ce() without $ce;
     return $ce.solve($expr, $vars);
 }
