@@ -96,8 +96,8 @@ sub to-latex($expr,
     if $sep.isa(Whatever) { $sep = ', \: ' }
     die 'The argument $sep is expected to be a string or Whatever' unless $sep ~~ Str:D;
 
-    my $res = do if $expr ~~ (Array:D | List:D | Seq:D) && $expr.all ~~ (Array:D | List:D | Seq:D) {
-        $expr.map({ $ce.to-latex($_) }).join($sep)
+    my $res = do if $expr ~~ (Array:D | List:D | Seq:D) && $expr.all ~~ (Array:D | List:D | Seq:D | Numeric:D) {
+        $expr.map({ $_ ~~ Numeric:D ?? $ce.to-latex(['Number', $_]) !! $ce.to-latex($_) }).join($sep)
     } else {
         $ce.to-latex($expr)
     }
