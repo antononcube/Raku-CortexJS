@@ -1,12 +1,12 @@
 {
     "name": "CortexJS",
     "description": "Raku bridge for the CortexJS Compute Engine Node package.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "raku": "6.*",
     "auth": "zef:antononcube",
     "depends": [
         "JSON::Fast:ver<0.19+>",
-        "LaTeX::Grammar:ver<0.0.1+>"
+        "LaTeX::Grammar:ver<0.0.3+>"
     ],
     "provides": {
         "CortexJS": "lib/CortexJS.rakumod",
