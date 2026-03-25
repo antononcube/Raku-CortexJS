@@ -22,10 +22,38 @@ sub start-ce() {
     }
 }
 
+#==========================================================
+# LaTeX functions
+#==========================================================
+
 sub parse-latex($expr) is export {
     start-ce() without $ce;
     return $ce.parse-latex($expr);
 }
+
+sub to-latex($expr,
+             :$sep is copy = Whatever,
+             Bool:D :b(:$bracketed) = True,
+             Str:D :$left-bracket = '$',
+             Str:D :$right-bracket = '$'
+             ) is export {
+    start-ce() without $ce;
+
+    if $sep.isa(Whatever) { $sep = ', \: ' }
+    die 'The argument $sep is expected to be a string or Whatever' unless $sep ~~ Str:D;
+
+    my $res = do if $expr ~~ (Array:D | List:D | Seq:D) && $expr.all ~~ (Array:D | List:D | Seq:D | Numeric:D) {
+        $expr.map({ $_ ~~ Numeric:D ?? $ce.to-latex(['Number', $_]) !! $ce.to-latex($_) }).join($sep)
+    } else {
+        $ce.to-latex($expr)
+    }
+
+    return $bracketed ?? $left-bracket ~ $res ~ $right-bracket !! $res;
+}
+
+#==========================================================
+# Free symbolic functions
+#==========================================================
 
 sub simplify($expr) is export {
     start-ce() without $ce;
@@ -85,26 +113,15 @@ sub cortex-js-call($func, $expr) is export {
     return $ce.call($func, $expr);
 }
 
-sub to-latex($expr,
-             :$sep is copy = Whatever,
-             Bool:D :b(:$bracketed) = True,
-             Str:D :$left-bracket = '$',
-             Str:D :$right-bracket = '$'
-             ) is export {
-    start-ce() without $ce;
+#==========================================================
+# Wrappers
+#==========================================================
 
-    if $sep.isa(Whatever) { $sep = ', \: ' }
-    die 'The argument $sep is expected to be a string or Whatever' unless $sep ~~ Str:D;
+# TBD...
 
-    my $res = do if $expr ~~ (Array:D | List:D | Seq:D) && $expr.all ~~ (Array:D | List:D | Seq:D | Numeric:D) {
-        $expr.map({ $_ ~~ Numeric:D ?? $ce.to-latex(['Number', $_]) !! $ce.to-latex($_) }).join($sep)
-    } else {
-        $ce.to-latex($expr)
-    }
-
-    return $bracketed ?? $left-bracket ~ $res ~ $right-bracket !! $res;
-}
-
+#==========================================================
+# Cleanup
+#==========================================================
 END {
     $ce.close if $ce;
 }
