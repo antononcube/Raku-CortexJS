@@ -2,6 +2,7 @@ use v6.d;
 unit module CortexJS;
 
 use CortexJS::ComputeEngine;
+use LaTeX::Grammar;
 
 our sub resources($key) {
     %?RESOURCES{$key}
@@ -55,44 +56,44 @@ sub to-latex($expr,
 # Free symbolic functions
 #==========================================================
 
-sub simplify($expr) is export {
+our sub simplify($expr) is export {
     start-ce() without $ce;
     return $ce.simplify($expr);
 }
 
-sub assign($id, $expr) is export {
+our sub assign($id, $expr) is export {
     start-ce() without $ce;
     return $ce.simplify(:$id, $expr);
 }
 
-sub evaluate($expr) is export {
+our sub evaluate($expr) is export {
     start-ce() without $ce;
     return $ce.evaluate($expr);
 }
 
-sub N($expr) is export {
+our sub N($expr) is export {
     start-ce() without $ce;
     return $ce.N($expr);
 }
 
-sub expand($expr) is export {
+our sub expand($expr) is export {
     start-ce() without $ce;
     return $ce.expand($expr);
 }
 
-sub expandAll($expr) is export {
+our sub expandAll($expr) is export {
     start-ce() without $ce;
     return $ce.expandAll($expr);
 }
 
 our &expand-all is export = &expandAll;
 
-sub factor($expr) is export {
+our sub factor($expr) is export {
     start-ce() without $ce;
     return $ce.factor($expr);
 }
 
-proto sub solve($expr, |) is export {*}
+our proto sub solve($expr, |) is export {*}
 
 multi sub solve($expr, $vars) {
     return solve($expr, :$vars);
@@ -108,7 +109,7 @@ multi sub solve($expr) {
     return $ce.solve($expr);
 }
 
-sub cortex-js-call($func, $expr) is export {
+our sub cortex-js-call($func, $expr) is export {
     start-ce() without $ce;
     return $ce.call($func, $expr);
 }
@@ -117,7 +118,42 @@ sub cortex-js-call($func, $expr) is export {
 # Wrappers
 #==========================================================
 
-# TBD...
+# Using LaTeX::Grammar function &latex-parse to detect LaTeX input
+my &is-latex-spec = { so latex-parse($_) }
+
+our @wrappers;
+
+our sub wrap-symbolic-subs() {
+    return if @wrappers;
+
+    @wrappers = [&simplify, &evaluate, &N, &expand, &expand-all, &expandAll, &factor].map({
+        $_.wrap(-> $expr {
+            my $is-latex = &is-latex-spec($expr);
+            my $expr2 = $is-latex ?? parse-latex($expr) !! $expr;
+
+            my $res = callwith($expr2);
+
+            $is-latex ?? to-latex($res) !! $res;
+        })
+    });
+
+    @wrappers.push(
+            &solve.wrap(-> $expr, |c {
+                my $is-latex = &is-latex-spec($expr);
+                my $expr2 = $is-latex ?? parse-latex($expr) !! $expr;
+
+                my $res = callwith($expr2, |c);
+
+                $is-latex ?? to-latex($res) !! $res;
+            })
+    )
+}
+
+our sub unwrap-symbolic-subs() {
+    return unless @wrappers;
+    ([&simplify, &evaluate, &N, &expand, &expand-all, &expandAll, &factor, &solve] Z @wrappers).map({ $_.head.unwrap($_.tail) });
+    @wrappers = Empty
+}
 
 #==========================================================
 # Cleanup
