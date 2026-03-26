@@ -186,8 +186,8 @@ $a^2+b^2-2ab$
 
 
 **Remark:** The "free functions" `evaluate`, `N`, `simplify`, `assign`, `expand`, `expandAll`, `factor`, and `solve`
-try to recognize (or parse) a string input as LaTeX code, and if parsing is successful, 
-then (more or less) the processing pipeline in applied: `$expr ==> parse-latex() ==> &func() ==> to-latex()`.
+verify (by parsing) is a string input a valid LaTeX code, and if the verification is successful, 
+then (more or less) the following processing pipeline in applied: `$expr ==> parse-latex() ==> &func() ==> to-latex()`.
 
 Using assignment for repeated expression evaluation:
 
