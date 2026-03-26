@@ -8,6 +8,10 @@ our sub resources($key) {
     %?RESOURCES{$key}
 }
 
+#==========================================================
+# Computation engine object
+#==========================================================
+
 my $ce = Whatever;
 
 sub start-ce() {
@@ -21,6 +25,11 @@ sub start-ce() {
             }
         }
     }
+}
+
+# Clean up
+END {
+    $ce.close if $ce;
 }
 
 #==========================================================
@@ -153,11 +162,4 @@ our sub unwrap-symbolic-subs() {
     return unless @wrappers;
     ([&simplify, &evaluate, &N, &expand, &expand-all, &expandAll, &factor, &solve] Z @wrappers).map({ $_.head.unwrap($_.tail) });
     @wrappers = Empty
-}
-
-#==========================================================
-# Cleanup
-#==========================================================
-END {
-    $ce.close if $ce;
 }
