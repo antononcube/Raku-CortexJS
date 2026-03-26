@@ -72,11 +72,21 @@ sub latex-pipeline(Str:D $func, Str:D $expr, *@args, *%args) {
     my $is-latex = &is-latex-spec($expr);
     die 'Cannot parsr the given string as LaTeX code.' unless $is-latex;
 
-    my $expr2 = $is-latex ?? parse-latex($expr) !! $expr;
+    return do if $is-latex {
+        my $expr2 = parse-latex($expr);
 
-    my $res = ::("&{$func}")($expr2, |@args, |%args);
+        my @named-args = &to-latex.candidates».signature».params.map({ $_.grep(*.named)».name}).flat.unique;
 
-    return $is-latex ?? to-latex($res) !! $res;
+        my %args2 = %args.grep({ $_ ∉ @named-args });
+        my $res = ::("&{$func}")($expr2, |@args, |%args2);
+
+        %args2 = %args.grep({ $_ ∈ @named-args });
+        to-latex($res, |%args2)
+    } else {
+        # Currently this won't be reached, but I want to
+        # use this block of JSON strings that are valid MathJSON expressions.
+        my $res = ::("&{$func}")($expr, |@args, |%args);
+    }
 }
 
 #==========================================================
@@ -84,10 +94,10 @@ sub latex-pipeline(Str:D $func, Str:D $expr, *@args, *%args) {
 #==========================================================
 
 #| Simplify an expression, MathJSON or LaTeX.
-our proto sub simplify($expr) is export {*}
+our proto sub simplify($expr, |) is export {*}
 
-multi sub simplify(Str:D $expr) {
-    latex-pipeline('simplify', $expr)
+multi sub simplify(Str:D $expr, *%args) {
+    latex-pipeline('simplify', $expr, |%args)
 }
 
 multi sub simplify($expr) {
@@ -96,10 +106,10 @@ multi sub simplify($expr) {
 }
 
 #| Assign to a symbol with name $id the the expression, $expr (MathJSON or LaTeX.)
-our proto sub assign($id, $expr) is export {*}
+our proto sub assign($id, $expr, |) is export {*}
 
-multi sub assign($id, Str:D $expr) {
-    latex-pipeline('assign', $expr, :$id)
+multi sub assign($id, Str:D $expr, *%args) {
+    latex-pipeline('assign', $expr, :$id, |%args)
 }
 
 multi sub assign($id, $expr) {
@@ -113,10 +123,10 @@ multi sub assign($expr, :$id) {
 }
 
 #| Evaluate an expression, MathJSON or LaTeX.
-our proto sub evaluate($expr) is export {*}
+our proto sub evaluate($expr, |) is export {*}
 
-multi sub evaluate(Str:D $expr) {
-    latex-pipeline('evaluate', $expr)
+multi sub evaluate(Str:D $expr, *%args) {
+    latex-pipeline('evaluate', $expr, |%args)
 }
 
 multi sub evaluate($expr) {
@@ -125,10 +135,10 @@ multi sub evaluate($expr) {
 }
 
 #| Numerical value of an expression, MathJSON or LaTeX.
-our proto sub N($expr) is export {*}
+our proto sub N($expr, |) is export {*}
 
-multi sub N($id, Str:D $expr) {
-    latex-pipeline('N', $expr)
+multi sub N($id, Str:D $expr, *%args) {
+    latex-pipeline('N', $expr, |%args)
 }
 
 multi sub N($expr) {
@@ -137,10 +147,10 @@ multi sub N($expr) {
 }
 
 #| Expand an expression, MathJSON or LaTeX.
-our proto expand($expr) is export {*}
+our proto expand($expr, |) is export {*}
 
-multi sub expand(Str:D $expr) {
-    latex-pipeline('expand', $expr)
+multi sub expand(Str:D $expr, *%args) {
+    latex-pipeline('expand', $expr, |%args)
 }
 
 multi sub expand($expr) {
@@ -149,10 +159,10 @@ multi sub expand($expr) {
 }
 
 #| Expand an expression, MathJSON or LaTeX.
-our proto sub expandAll($expr) is export {*}
+our proto sub expandAll($expr, |) is export {*}
 
-multi sub expandAll(Str:D $expr) {
-    latex-pipeline('expandAll', $expr)
+multi sub expandAll(Str:D $expr, *%args) {
+    latex-pipeline('expandAll', $expr, |%args)
 }
 
 multi sub expandAll($expr) {
@@ -164,10 +174,10 @@ our &expand-all is export = &expandAll;
 
 
 #| Factor an expression, MathJSON or LaTeX.
-our proto sub factor($expr) is export {*}
+our proto sub factor($expr, |) is export {*}
 
-multi sub factor(Str:D $expr) {
-    latex-pipeline('factor', $expr)
+multi sub factor(Str:D $expr, *%args) {
+    latex-pipeline('factor', $expr, |%args)
 }
 
 multi sub factor($expr) {
@@ -197,10 +207,10 @@ multi sub solve($expr) {
 }
 
 #| Invoke a function over an expression, MathJSON or LaTeX.
-our proto sub cortex-js-call($func, $expr) is export {*}
+our proto sub cortex-js-call($func, $expr, |) is export {*}
 
-multi sub cortex-js-call($func, Str:D $expr) {
-    latex-pipeline('cortex-js-call', $expr, :$func)
+multi sub cortex-js-call($func, Str:D $expr, *%args) {
+    latex-pipeline('cortex-js-call', $expr, :$func, |%args)
 }
 
 multi sub cortex-js-call($expr, :$func) {
