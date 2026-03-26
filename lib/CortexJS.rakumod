@@ -76,11 +76,12 @@ sub latex-pipeline(Str:D $func, Str:D $expr, *@args, *%args) {
         my $expr2 = parse-latex($expr);
 
         my @named-args = &to-latex.candidates».signature».params.map({ $_.grep(*.named)».name}).flat.unique;
+        @named-args = @named-args.map({ $_.subst(/ ^ '$'/, :g) });
 
-        my %args2 = %args.grep({ $_ ∉ @named-args });
+        my %args2 = %args.grep({ $_.key ∉ @named-args });
         my $res = ::("&{$func}")($expr2, |@args, |%args2);
 
-        %args2 = %args.grep({ $_ ∈ @named-args });
+        %args2 = %args.grep({ $_.key ∈ @named-args });
         to-latex($res, |%args2)
     } else {
         # Currently this won't be reached, but I want to
