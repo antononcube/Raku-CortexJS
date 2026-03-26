@@ -49,4 +49,10 @@ subtest {
     is-deeply solve(parse-latex('x^2 - a x + 1 = 0'), 'a'), [["Add", "x", ["Divide", 1, "x"]],];
 }, 'free function symbolic solution for a';
 
+subtest {
+    ok solve('x^2 - a x + 1 = 0', 'a');
+    is-deeply solve('x^2 - a x + 1 = 0', 'a'), '$x+\frac{1}{x}$';
+    is-deeply solve('x^2 - a x + 1 = 0', 'a', :!bracketed), 'x+\frac{1}{x}';
+}, 'free function symbolic solution for a, auto latex-parse';
+
 done-testing;
