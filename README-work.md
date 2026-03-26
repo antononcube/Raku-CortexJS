@@ -124,42 +124,66 @@ flowchart TD
 
 Make a new computation engine object and evaluate a LaTeX expression:
 
-```raku
+```raku, results=asis
 use CortexJS;
-my $ce = ComputeEngine.new;
 
-$ce.evaluate($ce.parse-latex('e^{i\\pi}'))
+'e^{i\\pi}' ==> evaluate()
 ```
 
 Expand expression:
 
-```raku
-$ce.to-latex($ce.expand($ce.parse-latex('(a + b)^2')));
+```raku, results=asis
+'(a + b)^2' ==> expand()
 ```
 
 Simplify expression:
 
-```raku
-my $expr = $ce.parse-latex('3x^2 + 2x^2 + x + 5');
-say "{$ce.to-latex($expr)} = {$ce.to-latex($ce.simplify($expr))}";
+```raku, results=asis
+my $expr = parse-latex('3x^2 + 2x^2 + x + 5');
+say "{to-latex($expr)} = {to-latex(simplify($expr))}";
 ```
+
+Solve a symbolic equation
+
+```raku, results=asis
+'x^2 - a x + 1 = 0' ==> solve(vars => 'a')
+```
+
+The input can be both a LaTeX string (as above) or in [MathJSON format](https://mathlive.io/math-json/). 
+Here the LaTeX expression `(a - b)^2` is converted to MathJSON using the sub `parse-latex`:
+
+```raku
+parse-latex('(a - b)^2').raku 
+```
+
+Here the corresponding MathJSON expression is expanded:
+
+```raku
+["Power", ["Add", "a", ["Negate", "b"]], 2]
+==> expand()
+```
+
+MathJSON expressions can be converted to LaTeX with `to-latex`:
+
+```raku, results=asis
+_ ==> to-latex()
+```
+
+**Remark** The "free functions" `evaluate`, `N`, `simplify`, `assign`, `expand`, `expandAll`, `factor`, and `solve`
+try to recognize (or parse) a string input as LaTeX code, and if parsing is successful, 
+then (more or less) the processing pipeline in applied: `$expr ==> parse-latex() ==> &func() ==> to-latex()`.
 
 Using assignment for repeated expression evaluation:
 
 ```raku
-my $expr = $ce.parse-latex("3x^2+4x+2");
+my $expr = parse-latex("3x^2+4x+2");
 
 for (0, 0.1 ... 1) -> $x {
-  $ce.assign('x', $x);
-  say "f($x) = {$ce.evaluate($expr)}";
+  assign('x', $x);
+  say "f($x) = {evaluate($expr)}";
 }
 ```
 
-Can be put in the last code block:
-
-```raku
-LEAVE $ce.close;
-```
 
 ----
 
