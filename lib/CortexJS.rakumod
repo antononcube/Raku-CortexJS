@@ -62,47 +62,125 @@ sub to-latex($expr,
 }
 
 #==========================================================
+# LaTeX pipeline
+#==========================================================
+
+# Using LaTeX::Grammar function &latex-parse to detect LaTeX input
+my &is-latex-spec = { so latex-parse($_) }
+
+sub latex-pipeline(Str:D $func, Str:D $expr, *@args, *%args) {
+    my $is-latex = &is-latex-spec($expr);
+    die 'Cannot parsr the given string as LaTeX code.' unless $is-latex;
+
+    my $expr2 = $is-latex ?? parse-latex($expr) !! $expr;
+
+    my $res = ::("&{$func}")($expr2, |@args, |%args);
+
+    return $is-latex ?? to-latex($res) !! $res;
+}
+
+#==========================================================
 # Free symbolic functions
 #==========================================================
 
-our sub simplify($expr) is export {
+#| Simplify an expression, MathJSON or LaTeX.
+our proto sub simplify($expr) is export {*}
+
+multi sub simplify(Str:D $expr) {
+    latex-pipeline('simplify', $expr)
+}
+
+multi sub simplify($expr) {
     start-ce() without $ce;
     return $ce.simplify($expr);
 }
 
-our sub assign($id, $expr) is export {
+#| Assign to a symbol with name $id the the expression, $expr (MathJSON or LaTeX.)
+our proto sub assign($id, $expr) is export {*}
+
+multi sub assign($id, Str:D $expr) {
+    latex-pipeline('assign', $expr, :$id)
+}
+
+multi sub assign($id, $expr) {
     start-ce() without $ce;
     return $ce.simplify(:$id, $expr);
 }
 
-our sub evaluate($expr) is export {
+multi sub assign($expr, :$id) {
+    start-ce() without $ce;
+    return $ce.simplify(:$id, $expr);
+}
+
+#| Evaluate an expression, MathJSON or LaTeX.
+our proto sub evaluate($expr) is export {*}
+
+multi sub evaluate(Str:D $expr) {
+    latex-pipeline('evaluate', $expr)
+}
+
+multi sub evaluate($expr) {
     start-ce() without $ce;
     return $ce.evaluate($expr);
 }
 
-our sub N($expr) is export {
+#| Numerical value of an expression, MathJSON or LaTeX.
+our proto sub N($expr) is export {*}
+
+multi sub N($id, Str:D $expr) {
+    latex-pipeline('N', $expr)
+}
+
+multi sub N($expr) {
     start-ce() without $ce;
     return $ce.N($expr);
 }
 
-our sub expand($expr) is export {
+#| Expand an expression, MathJSON or LaTeX.
+our proto expand($expr) is export {*}
+
+multi sub expand(Str:D $expr) {
+    latex-pipeline('expand', $expr)
+}
+
+multi sub expand($expr) {
     start-ce() without $ce;
     return $ce.expand($expr);
 }
 
-our sub expandAll($expr) is export {
+#| Expand an expression, MathJSON or LaTeX.
+our proto sub expandAll($expr) is export {*}
+
+multi sub expandAll(Str:D $expr) {
+    latex-pipeline('expandAll', $expr)
+}
+
+multi sub expandAll($expr) {
     start-ce() without $ce;
     return $ce.expandAll($expr);
 }
 
 our &expand-all is export = &expandAll;
 
-our sub factor($expr) is export {
+
+#| Factor an expression, MathJSON or LaTeX.
+our proto sub factor($expr) is export {*}
+
+multi sub factor(Str:D $expr) {
+    latex-pipeline('factor', $expr)
+}
+
+multi sub factor($expr) {
     start-ce() without $ce;
     return $ce.factor($expr);
 }
 
+#| Solve an equation, MathJSON or LaTeX.
 our proto sub solve($expr, |) is export {*}
+
+multi sub solve(Str:D $expr, *@args, *%args) {
+    latex-pipeline('solve', $expr, |@args, |%args)
+}
 
 multi sub solve($expr, $vars) {
     return solve($expr, :$vars);
@@ -118,7 +196,18 @@ multi sub solve($expr) {
     return $ce.solve($expr);
 }
 
-our sub cortex-js-call($func, $expr) is export {
+#| Invoke a function over an expression, MathJSON or LaTeX.
+our proto sub cortex-js-call($func, $expr) is export {*}
+
+multi sub cortex-js-call($func, Str:D $expr) {
+    latex-pipeline('cortex-js-call', $expr, :$func)
+}
+
+multi sub cortex-js-call($expr, :$func) {
+    cortex-js-call($func, $expr)
+}
+
+multi sub cortex-js-call($func, $expr) {
     start-ce() without $ce;
     return $ce.call($func, $expr);
 }
@@ -126,10 +215,8 @@ our sub cortex-js-call($func, $expr) is export {
 #==========================================================
 # Wrappers
 #==========================================================
-
-# Using LaTeX::Grammar function &latex-parse to detect LaTeX input
-my &is-latex-spec = { so latex-parse($_) }
-
+# Not needed but I want to keep it as a reference for now.
+#`[
 our @wrappers;
 
 our sub wrap-symbolic-subs() {
@@ -163,3 +250,4 @@ our sub unwrap-symbolic-subs() {
     ([&simplify, &evaluate, &N, &expand, &expand-all, &expandAll, &factor, &solve] Z @wrappers).map({ $_.head.unwrap($_.tail) });
     @wrappers = Empty
 }
+]
