@@ -70,7 +70,7 @@ my &is-latex-spec = { so latex-parse($_) }
 
 sub latex-pipeline(Str:D $func, Str:D $expr, *@args, *%args) {
     my $is-latex = &is-latex-spec($expr);
-    die 'Cannot parsr the given string as LaTeX code.' unless $is-latex;
+    die 'Cannot parse the given string as LaTeX code.' unless $is-latex;
 
     return do if $is-latex {
         my $expr2 = parse-latex($expr);
